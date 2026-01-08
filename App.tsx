@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -276,19 +277,42 @@ const App: React.FC = () => {
             <div className="lg:col-span-3 min-h-[500px]">
               <AnimatePresence mode="wait">
                 {activeTab === 'trend' ? (
-                  <motion.div key="trend" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-[3.5rem] p-10 shadow-2xl h-full">
+                  <motion.div 
+                    key={`${selectedCity.name}-trend`}
+                    initial={{ opacity: 0, scale: 0.98 }} 
+                    animate={{ opacity: 1, scale: 1 }} 
+                    exit={{ opacity: 0, scale: 0.98 }} 
+                    className="bg-white rounded-[3.5rem] p-10 shadow-2xl h-full"
+                  >
                     <h4 className="font-black text-3xl mb-10">{selectedCity.name} 走势分析</h4>
-                    <div className="h-[400px]">
+                    {/* 添加左至右缓慢展开动画容器 */}
+                    <motion.div 
+                      key={`${selectedCity.name}-chart-reveal`}
+                      initial={{ clipPath: 'inset(0 100% 0 0)' }}
+                      whileInView={{ clipPath: 'inset(0 0% 0 0)' }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 2.5, ease: "easeInOut" }}
+                      className="h-[400px]"
+                    >
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={selectedCity.history}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="year" />
-                          <YAxis />
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                          <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontWeight: 600}} dy={10} />
+                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontWeight: 600}} dx={-10} />
                           <Tooltip content={<CustomTooltip />} />
-                          <Area type="monotone" dataKey="gdp" stroke="#2563eb" fill="#2563eb44" strokeWidth={4} />
+                          <Area 
+                            type="monotone" 
+                            dataKey="gdp" 
+                            stroke="#2563eb" 
+                            fill="#2563eb33" 
+                            strokeWidth={4} 
+                            isAnimationActive={true}
+                            animationDuration={2500}
+                            animationEasing="ease-in-out"
+                          />
                         </AreaChart>
                       </ResponsiveContainer>
-                    </div>
+                    </motion.div>
                   </motion.div>
                 ) : (
                   <motion.div key="pie" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-white rounded-[3.5rem] p-10 shadow-2xl h-full">
@@ -296,8 +320,15 @@ const App: React.FC = () => {
                     <div className="h-[400px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={cityDistributionData} innerRadius={80} outerRadius={120} dataKey="value" paddingAngle={5}>
-                            {cityDistributionData.map((_, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                          <Pie 
+                            data={cityDistributionData} 
+                            innerRadius={100} 
+                            outerRadius={140} 
+                            dataKey="value" 
+                            paddingAngle={8}
+                            animationDuration={1500}
+                          >
+                            {cityDistributionData.map((_, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} stroke="none" />)}
                           </Pie>
                           <Tooltip content={<CustomTooltip />} />
                         </PieChart>
@@ -363,17 +394,57 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="rounded-[3rem] overflow-hidden shadow-2xl">
-              <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover" alt="Advantage" />
             </div>
           </div>
         </div>
       </motion.section>
 
-      {/* 2025/2026愿景 */}
-      <motion.section id="vision" initial="hidden" whileInView="visible" variants={sectionVariants} className="py-32 bg-white">
+      {/* 2025/2026愿景总结板块 */}
+      <motion.section 
+        id="vision" 
+        initial="hidden" 
+        whileInView="visible" 
+        variants={sectionVariants} 
+        className="py-32 bg-white overflow-hidden relative"
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-blue-600 to-transparent"></div>
         <div className="max-w-5xl mx-auto px-4 text-center">
-          <h2 className="text-5xl font-black mb-12">2025：韧性跨越 | 2026：聚势启新</h2>
-          <p className="text-2xl font-bold text-blue-600 italic tracking-widest">“ 往昔已展千重锦，明朝更进百尺竿 ”</p>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+            className="mb-16"
+          >
+            <h2 className="text-5xl md:text-6xl font-black mb-10 tracking-tighter text-slate-900">
+              时代合奏 · 续写辉煌
+            </h2>
+            <div className="flex flex-col md:flex-row gap-12 items-stretch">
+              <div className="flex-1 p-10 bg-slate-50 rounded-[3rem] border border-slate-100 text-left relative">
+                <div className="absolute -top-4 left-10 px-4 py-1 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-full">2025 · 韧性跨越</div>
+                <h3 className="text-2xl font-black mb-4 text-slate-800">总结：在挑战中屹立</h3>
+                <p className="text-slate-600 leading-relaxed font-medium">
+                  2025年，陕西在多重挑战下展现出强大的经济韧性。秦创原驱动引擎火力全开，西安都市圈建设成效显著，全省高质量发展迈出坚实步伐。这一年，我们顺利完成了“十四五”规划的关键冲刺，不仅稳住了经济基本盘，更在科技创新与文化出海领域实现了历史性突破。
+                </p>
+              </div>
+              <div className="flex-1 p-10 bg-blue-600 rounded-[3rem] text-left text-white relative shadow-2xl shadow-blue-200">
+                <div className="absolute -top-4 left-10 px-4 py-1 bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-full">2026 · 聚势启新</div>
+                <h3 className="text-2xl font-black mb-4 text-white">展望：于新局中蝶变</h3>
+                <p className="text-blue-50 leading-relaxed font-medium">
+                  迈入2026年，三秦大地将蓄势聚能，深化产业升级与区域协同。在这一年，我们将迎来新一轮的高质量增长窗口，数智化转型将全面赋能传统工业。陕西将以更加开放、自信的姿态，深耕“一带一路”战略，开启从经济大省向经济强省跨越的新篇章。
+                </p>
+              </div>
+            </div>
+          </motion.div>
+          
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="text-2xl font-black text-blue-600 italic tracking-[0.2em]"
+          >
+            “ 往昔已展千重锦，明朝更进百尺竿 ”
+          </motion.p>
         </div>
       </motion.section>
 
@@ -385,7 +456,7 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* --- 弹窗组件：移至根部以修复 Fixed 定位偏差 --- */}
+      {/* --- 弹窗组件 --- */}
       <AnimatePresence>
         {selectedCulture && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
