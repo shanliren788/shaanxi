@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -25,13 +25,41 @@ const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: { staggerChildren: 0.15 }
   }
 };
 
 const App: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [selectedCity, setSelectedCity] = useState<CityData>(SHANXI_CITIES[0]);
   const [activeTab, setActiveTab] = useState<'trend' | 'structure'>('trend');
+  const [selectedCulture, setSelectedCulture] = useState<{icon: string, title: string, detail: string} | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // 模拟载入进度与初始化
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          setTimeout(() => setIsLoading(false), 500);
+          return 100;
+        }
+        return prev + Math.floor(Math.random() * 15) + 5;
+      });
+    }, 150);
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const cityDistributionData = useMemo(() => {
     return SHANXI_CITIES.map(city => ({
@@ -40,6 +68,13 @@ const App: React.FC = () => {
       region: city.region
     }));
   }, []);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -80,56 +115,201 @@ const App: React.FC = () => {
     return null;
   };
 
+  const cultureItems = [
+    { 
+      icon: "🎭", 
+      title: "文旅融合示范", 
+      detail: "深耕大唐不夜城、西安城墙等超级IP，通过沉浸式演艺带动千亿级文旅产业链。2023年旅游收入同比增长显著。" 
+    },
+    { 
+      icon: "🏛️", 
+      title: "数字文保科技", 
+      detail: "利用VR/AR、高精度三维扫描技术，实现秦始皇陵、敦煌数字丝路工程，科技守护中华文明瑰宝。" 
+    },
+    { 
+      icon: "🎨", 
+      title: "非遗产业化", 
+      detail: "整合秦腔、凤翔泥塑、安塞腰鼓等国家级非遗资源，打造现代化文创产品出口基地，文化出海步履稳健。" 
+    }
+  ];
+
+  const navLinks = [
+    { name: '首页', id: 'home' },
+    { name: '经济看板', id: 'data' },
+    { name: '文化底蕴', id: 'culture' },
+    { name: '战略优势', id: 'advantages' },
+    { name: '愿景展望', id: 'vision' },
+  ];
+
   return (
     <div className="min-h-screen">
-      {/* 封面板块：数据化城市天际线背景 */}
-      <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+      {/* 载入动画层 */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 1, ease: "easeInOut" } }}
+            className="fixed inset-0 z-[200] bg-slate-900 flex flex-col items-center justify-center overflow-hidden"
+          >
+            {/* 背景科技纹理 */}
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+            
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="relative z-10 flex flex-col items-center"
+            >
+              <div className="text-blue-500 mb-8">
+                <svg className="w-24 h-24 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              
+              <h2 className="text-3xl font-black text-white tracking-[0.5em] mb-4">三秦之窗</h2>
+              <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-10">正在同步全省经济数据资产...</p>
+              
+              <div className="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden relative shadow-inner">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${loadingProgress}%` }}
+                  className="h-full bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.8)]"
+                />
+              </div>
+              <div className="mt-4 text-blue-400 font-mono font-bold text-sm">
+                {loadingProgress}%
+              </div>
+            </motion.div>
+            
+            {/* 装饰性动画圆环 */}
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+              className="absolute w-[600px] h-[600px] border border-blue-500/10 rounded-full"
+            />
+            <motion.div 
+              animate={{ rotate: -360 }}
+              transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
+              className="absolute w-[400px] h-[400px] border border-blue-500/5 rounded-full"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 顶部导航栏 */}
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 px-6 py-4 ${
+          isScrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg' : 'bg-transparent'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div 
+            className={`text-xl font-black tracking-tighter cursor-pointer transition-colors ${isScrolled ? 'text-blue-600' : 'text-white'}`}
+            onClick={() => scrollToSection('home')}
+          >
+            SHAANXI <span className={isScrolled ? 'text-slate-900' : 'text-blue-400'}>DATA</span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-10">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => scrollToSection(link.id)}
+                className={`text-sm font-black uppercase tracking-widest transition-all hover:scale-110 active:scale-95 ${
+                  isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-white/80 hover:text-white'
+                }`}
+              >
+                {link.name}
+              </button>
+            ))}
+          </div>
+
+          <div className="md:hidden">
+            <button className={`p-2 rounded-xl ${isScrolled ? 'bg-blue-50 text-blue-600' : 'bg-white/10 text-white'}`}>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* 封面板块：政府建筑天际线背景 */}
+      <section id="home" className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+        {/* 背景开场动画 */}
         <motion.div 
-          initial={{ scale: 1.2, opacity: 0 }}
+          initial={{ scale: 1.3, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 2.5, ease: "easeOut" }}
+          transition={{ duration: 3, ease: [0.22, 1, 0.36, 1] }}
           className="absolute inset-0 bg-cover bg-center"
           style={{ 
-            backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.5)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070')`,
+            backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.45)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070')`,
           }}
         />
         
-        {/* 动态网格覆盖层，增强数据感 */}
+        {/* 覆盖层纹理 */}
         <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
         
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center z-10">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.3 }}
+            variants={staggerContainer}
+            initial="hidden"
+            animate={!isLoading ? "visible" : "hidden"}
+            className="w-full flex flex-col items-center"
           >
-            <h1 
-              className="text-6xl md:text-9xl font-black mb-8 tracking-tighter text-blue-400 select-none"
-              style={{ textShadow: '0 10px 30px rgba(0,0,0,0.8), 0 0 40px rgba(59,130,246,0.5)' }}
+            <motion.h1 
+              variants={{
+                hidden: { opacity: 0, y: 30, scale: 0.95 },
+                visible: { opacity: 1, y: 0, scale: 1 }
+              }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="text-6xl md:text-9xl font-black mb-10 tracking-tighter text-white select-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
             >
               三秦之脊 · 经济大省
-            </h1>
-            <p className="text-xl md:text-3xl max-w-4xl font-medium opacity-90 leading-relaxed mb-10 drop-shadow-2xl tracking-[0.1em]">
+            </motion.h1>
+
+            <motion.p 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              transition={{ duration: 1, delay: 0.4 }}
+              className="text-xl md:text-3xl max-w-4xl mx-auto font-medium opacity-90 leading-relaxed drop-shadow-2xl tracking-[0.15em] italic"
+            >
               陕西省 GDP 十年演进全景数据可视化大屏
-            </p>
-            <div className="h-2 w-48 bg-blue-500 mx-auto rounded-full mb-10 shadow-[0_0_25px_rgba(59,130,246,0.9)]"></div>
+            </motion.p>
           </motion.div>
-          
+        </div>
+
+        {/* 底部引导箭头 - 独立定位 */}
+        <div className="absolute bottom-12 left-0 right-0 flex justify-center z-20">
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-            className="animate-bounce"
+            initial={{ opacity: 0, y: -20 }}
+            animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+            transition={{ type: "spring", stiffness: 100, delay: 1.2 }}
+            className="relative"
           >
-            <svg className="w-12 h-12 text-blue-400 filter drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
+            <div className="absolute -inset-8 bg-white/10 blur-3xl rounded-full"></div>
+            <motion.div 
+              animate={{ y: [0, 10, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              className="cursor-pointer relative z-10 group"
+              onClick={() => scrollToSection('data')}
+            >
+              <svg className="w-10 h-10 text-white filter drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* 数据大屏核心区域 */}
       <motion.section 
+        id="data"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: false, amount: 0.1 }}
@@ -156,7 +336,6 @@ const App: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-            {/* 侧边列表 */}
             <motion.div variants={staggerContainer} className="lg:col-span-1 space-y-4">
               <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] mb-6 pl-2">区域城市检索</h3>
               {SHANXI_CITIES.map((city) => (
@@ -181,7 +360,6 @@ const App: React.FC = () => {
               ))}
             </motion.div>
 
-            {/* 图表展示区 */}
             <div className="lg:col-span-3">
               <AnimatePresence mode="wait">
                 {activeTab === 'trend' ? (
@@ -199,22 +377,38 @@ const App: React.FC = () => {
                         <p className="text-[10px] text-blue-500 font-black uppercase tracking-[0.2em] mt-1">2023 现价估算</p>
                       </div>
                     </div>
-                    <div className="h-[480px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={selectedCity.history}>
-                          <defs>
-                            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#2563eb" stopOpacity={0.4}/>
-                              <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="5 5" vertical={false} stroke="#f1f5f9" />
-                          <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} dy={15} />
-                          <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} />
-                          <Tooltip content={<CustomTooltip />} cursor={{stroke: '#2563eb', strokeWidth: 2, strokeDasharray: '6 6'}} />
-                          <Area type="monotone" dataKey="gdp" stroke="#2563eb" strokeWidth={6} fill="url(#areaGrad)" animationDuration={3000} />
-                        </AreaChart>
-                      </ResponsiveContainer>
+                    <div className="h-[480px] overflow-hidden">
+                      <motion.div 
+                        key={`${selectedCity.name}-trend-revealer`}
+                        initial={{ clipPath: 'inset(0 100% 0 0)' }}
+                        whileInView={{ clipPath: 'inset(0 0% 0 0)' }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        className="h-full"
+                      >
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={selectedCity.history}>
+                            <defs>
+                              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#2563eb" stopOpacity={0.4}/>
+                                <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="5 5" vertical={false} stroke="#f1f5f9" />
+                            <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} dy={15} />
+                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12, fontWeight: 700}} />
+                            <Tooltip content={<CustomTooltip />} cursor={{stroke: '#2563eb', strokeWidth: 2, strokeDasharray: '6 6'}} />
+                            <Area 
+                              type="monotone" 
+                              dataKey="gdp" 
+                              stroke="#2563eb" 
+                              strokeWidth={6} 
+                              fill="url(#areaGrad)" 
+                              isAnimationActive={false}
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </motion.div>
                     </div>
                   </motion.div>
                 ) : (
@@ -252,7 +446,7 @@ const App: React.FC = () => {
                         </div>
                         <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 group hover:bg-emerald-600 transition-all duration-700 shadow-sm hover:shadow-emerald-200">
                           <h5 className="font-black text-slate-800 mb-2 group-hover:text-white transition-colors">陕北地区 (能源支柱)</h5>
-                          <p className="text-sm text-slate-500 group-hover:text-emerald-50 transition-colors font-medium">榆林与延安以强大的化石能源与现代煤化工产业，为全省乃至全国提供稳定的资源保障。</p>
+                          <p className="text-sm text-slate-500 group-hover:text-blue-50 transition-colors font-medium">榆林与延安以强大的化石能源与现代煤化工产业，为全省乃至全国提供稳定的资源保障。</p>
                         </div>
                         <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200 group hover:bg-amber-600 transition-all duration-700 shadow-sm hover:shadow-amber-200">
                           <h5 className="font-black text-slate-800 mb-2 group-hover:text-white transition-colors">陕南地区 (绿色走廊)</h5>
@@ -268,8 +462,83 @@ const App: React.FC = () => {
         </div>
       </motion.section>
 
+      {/* 文化板块 */}
+      <motion.section
+        id="culture"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.2 }}
+        variants={sectionVariants}
+        className="py-24 bg-white"
+      >
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <span className="text-blue-600 font-black tracking-[0.5em] text-xs uppercase mb-4 block">Cultural Heritage</span>
+          <h2 className="text-4xl font-black text-slate-900 mb-16 tracking-tight text-center">厚植文化底蕴 · 赋能数字未来</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {cultureItems.map((item, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => setSelectedCulture(item)}
+                className="group cursor-pointer p-12 bg-slate-50 rounded-[3rem] border border-slate-100 transition-all duration-500 hover:bg-blue-600 hover:shadow-2xl hover:shadow-blue-200"
+              >
+                <div className="text-6xl mb-6 transition-transform duration-500 group-hover:scale-110">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-black text-slate-800 group-hover:text-white transition-colors mb-4">{item.title}</h3>
+                <div className="mt-4 flex justify-center">
+                  <div className="w-10 h-1 bg-blue-500 group-hover:bg-white rounded-full transition-colors"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 文化详情弹窗 */}
+        <AnimatePresence>
+          {selectedCulture && (
+            <>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedCulture(null)}
+                className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[110] cursor-pointer"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white p-10 rounded-[3rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] z-[111] border border-slate-100"
+              >
+                <button 
+                  onClick={() => setSelectedCulture(null)}
+                  className="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
+                >
+                  ✕
+                </button>
+                <div className="text-7xl mb-8 text-center">{selectedCulture.icon}</div>
+                <h4 className="text-2xl font-black text-slate-900 mb-6 text-center">{selectedCulture.title}</h4>
+                <p className="text-slate-600 leading-relaxed font-medium text-center italic">
+                  “{selectedCulture.detail}”
+                </p>
+                <div className="mt-10 flex justify-center">
+                  <button 
+                    onClick={() => setSelectedCulture(null)}
+                    className="px-8 py-3 bg-blue-600 text-white rounded-2xl font-black text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                  >
+                    了解完毕
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </motion.section>
+
       {/* 优势介绍板块 */}
       <motion.section 
+        id="advantages"
         initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.2 }} variants={sectionVariants}
         className="py-32 bg-slate-900 text-white relative overflow-hidden"
       >
@@ -313,6 +582,65 @@ const App: React.FC = () => {
               </div>
             </motion.div>
           </div>
+        </div>
+      </motion.section>
+
+      {/* 2025总结与2026愿景板块 */}
+      <motion.section
+        id="vision"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.3 }}
+        variants={sectionVariants}
+        className="py-32 bg-white relative overflow-hidden"
+      >
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+            className="mb-16"
+          >
+            <span className="text-blue-600 font-black tracking-[0.5em] text-sm uppercase mb-6 block">Chronicle & Vision</span>
+            <h2 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter">
+              2025：韧性跨越 <br/>
+              <span className="text-slate-300">2026：聚势启新</span>
+            </h2>
+            <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mb-12"></div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 text-left">
+            <div className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100">
+              <h4 className="text-2xl font-black text-slate-900 mb-6 flex items-center gap-4">
+                <span className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-sm italic">25</span>
+                年度圆满收官
+              </h4>
+              <p className="text-slate-600 leading-relaxed font-medium">
+                2025年，陕西在高质量发展的征途上写下了浓墨重彩的一笔。科技创新与能源转型“双轮驱动”成效显著，全省GDP增速持续稳健，秦创原生态体系全面爆发，成为西部乃至全国的科创新引擎。
+              </p>
+            </div>
+            <div className="p-10 bg-blue-600 rounded-[2.5rem] shadow-2xl shadow-blue-200">
+              <h4 className="text-2xl font-black text-white mb-6 flex items-center gap-4">
+                <span className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white text-sm italic">26</span>
+                新篇即将开启
+              </h4>
+              <p className="text-blue-50 leading-relaxed font-medium">
+                站在2026年的门槛，陕西将继续深化内陆改革开放，以更开放的姿态融入全球产业链。数字化转型将深入千行百业，三秦大地正积蓄更强的势能，准备迎接属于这片厚土的高光时刻。
+              </p>
+            </div>
+          </div>
+
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="mt-20 pt-12 border-t border-slate-100"
+          >
+            <p className="text-3xl font-black text-slate-900 italic tracking-tighter">
+              “ 往昔已展千重锦，<span className="text-blue-600">明朝更进百尺竿</span> ”
+            </p>
+            <p className="mt-4 text-slate-400 font-bold uppercase tracking-widest text-xs">— 开启三秦经济新纪元 —</p>
+          </motion.div>
         </div>
       </motion.section>
 
