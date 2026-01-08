@@ -35,6 +35,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'trend' | 'structure'>('trend');
   const [selectedCulture, setSelectedCulture] = useState<{icon: string, title: string, detail: string} | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hasDataSectionAnimated, setHasDataSectionAnimated] = useState(false);
 
   // 模拟载入进度与初始化
   useEffect(() => {
@@ -248,9 +249,14 @@ const App: React.FC = () => {
       </section>
 
       {/* 数据大屏核心区域 */}
-      <motion.section 
+      <motion.section
         id="data"
         initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={sectionVariants}
+        onViewportEnter={() => {
+          if (!hasDataSectionAnimated) {
+            setHasDataSectionAnimated(true);
+          }
+        }}
         className="py-24 bg-[#f8fafc]"
       >
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
@@ -285,7 +291,17 @@ const App: React.FC = () => {
                           <XAxis dataKey="year" />
                           <YAxis />
                           <Tooltip content={<CustomTooltip />} />
-                          <Area type="monotone" dataKey="gdp" stroke="#2563eb" fill="#2563eb44" strokeWidth={4} />
+                          <Area
+                            type="monotone"
+                            dataKey="gdp"
+                            stroke="#2563eb"
+                            fill="#2563eb44"
+                            strokeWidth={4}
+                            isAnimationActive={hasDataSectionAnimated}
+                            animationBegin={0}
+                            animationDuration={2000}
+                            animationEasing="ease-in-out"
+                          />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
