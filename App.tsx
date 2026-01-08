@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -129,382 +128,289 @@ const App: React.FC = () => {
     { 
       icon: "🎨", 
       title: "非遗产业化", 
-      detail: "整合秦腔、凤翔泥塑、安塞腰鼓等国家级非遗资源，打造现代化文创产品出口基地，文化出海步履不停。" 
+      detail: "整合秦腔、凤翔泥塑、安塞腰鼓等国家级非遗资源，打造现代化文创产品出口基地，文化出海步履稳健。" 
     }
   ];
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
-        <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="relative w-64 h-2 bg-gray-100 rounded-full overflow-hidden"
-        >
-          <motion.div 
-            className="absolute top-0 left-0 h-full bg-blue-600"
-            initial={{ width: 0 }}
-            animate={{ width: `${loadingProgress}%` }}
-          />
-        </motion.div>
-        <p className="mt-4 text-gray-500 font-medium tracking-widest">陕西经济发展概况载入中 {loadingProgress}%</p>
-      </div>
-    );
-  }
+  const navLinks = [
+    { name: '首页', id: 'home' },
+    { name: '经济看板', id: 'data' },
+    { name: '文化底蕴', id: 'culture' },
+    { name: '战略优势', id: 'advantages' },
+    { name: '愿景展望', id: 'vision' },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-gray-900 selection:bg-blue-100">
-      {/* 导航栏 */}
-      <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-white/80 backdrop-blur-lg shadow-sm border-b' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-200">
-              秦
-            </div>
-            <span className="font-bold text-xl tracking-tight">陕西省经济数据看板</span>
-          </div>
-          <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-gray-500">
-            <button onClick={() => scrollToSection('overview')} className="hover:text-blue-600 transition-colors">全省综述</button>
-            <button onClick={() => scrollToSection('cities')} className="hover:text-blue-600 transition-colors">城市透视</button>
-            <button onClick={() => scrollToSection('culture')} className="hover:text-blue-600 transition-colors">文化科技</button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section id="overview" className="relative pt-40 pb-20 px-6 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full opacity-20 pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-400 rounded-full blur-[120px]" />
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              variants={sectionVariants}
-            >
-              <span className="inline-block py-1.5 px-4 rounded-full bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-widest mb-6">
-                2023 年度报告
-              </span>
-              <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-8">
-                三秦大地 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600">
-                  高质量发展
-                </span> 新篇章
-              </h1>
-              <p className="text-xl text-gray-500 max-w-xl leading-relaxed mb-10">
-                陕西省2023年实现生产总值3.38万亿元，同比增长4.3%。作为古丝绸之路起点，正以科技创新引领现代化产业体系建设。
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex-1 min-w-[200px]">
-                  <p className="text-gray-400 text-sm font-medium mb-1">全省 GDP 总额</p>
-                  <p className="text-3xl font-bold">33,786.07 <span className="text-lg text-gray-400">亿</span></p>
-                </div>
-                <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex-1 min-w-[200px]">
-                  <p className="text-gray-400 text-sm font-medium mb-1">增长率</p>
-                  <p className="text-3xl font-bold text-emerald-500">+4.3%</p>
-                </div>
-              </div>
-            </motion.div>
-
+    <div className="min-h-screen">
+      {/* 载入动画层 */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 1, ease: "easeInOut" } }}
+            className="fixed inset-0 z-[200] bg-slate-900 flex flex-col items-center justify-center overflow-hidden"
+          >
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
             <motion.div 
-              className="bg-white/50 backdrop-blur-sm p-8 rounded-[40px] shadow-2xl border border-white/50 h-[500px]"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1 }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="relative z-10 flex flex-col items-center"
             >
-              <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                省域各市 GDP 分布
-              </h3>
-              <ResponsiveContainer width="100%" height="80%">
-                <PieChart>
-                  <Pie
-                    data={cityDistributionData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={80}
-                    outerRadius={140}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {cityDistributionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="grid grid-cols-4 gap-4 mt-4">
-                {cityDistributionData.slice(0, 4).map((city, idx) => (
-                  <div key={city.name} className="text-center">
-                    <p className="text-[10px] text-gray-400 font-bold mb-1">{city.name}</p>
-                    <div className="w-full h-1 rounded-full overflow-hidden bg-gray-100">
-                      <div className="h-full" style={{ width: '100%', backgroundColor: COLORS[idx] }} />
-                    </div>
-                  </div>
-                ))}
+              <div className="text-blue-500 mb-8">
+                <svg className="w-24 h-24 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-black text-white tracking-[0.5em] mb-4">三秦之窗</h2>
+              <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-10">正在同步全省经济数据资产...</p>
+              <div className="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden relative shadow-inner">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${loadingProgress}%` }}
+                  className="h-full bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.8)]"
+                />
+              </div>
+              <div className="mt-4 text-blue-400 font-mono font-bold text-sm">
+                {loadingProgress}%
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 顶部导航栏 */}
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 px-6 py-4 ${
+          isScrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg' : 'bg-transparent'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div 
+            className={`text-xl font-black tracking-tighter cursor-pointer transition-colors ${isScrolled ? 'text-blue-600' : 'text-white'}`}
+            onClick={() => scrollToSection('home')}
+          >
+            SHAANXI <span className={isScrolled ? 'text-slate-900' : 'text-blue-400'}>DATA</span>
           </div>
+          <div className="hidden md:flex items-center gap-10">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => scrollToSection(link.id)}
+                className={`text-sm font-black uppercase tracking-widest transition-all hover:scale-110 active:scale-95 ${
+                  isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-white/80 hover:text-white'
+                }`}
+              >
+                {link.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* 首页板块 */}
+      <section id="home" className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+        <motion.div 
+          initial={{ scale: 1.3, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 3, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ 
+            backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.45)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=2070')`,
+          }}
+        />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center z-10">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate={!isLoading ? "visible" : "hidden"}
+            className="w-full flex flex-col items-center"
+          >
+            <motion.h1 
+              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }}
+              transition={{ duration: 1.2 }}
+              className="text-6xl md:text-9xl font-black mb-10 tracking-tighter"
+            >
+              三秦之脊 · 经济大省
+            </motion.h1>
+            <motion.p 
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+              transition={{ duration: 1, delay: 0.4 }}
+              className="text-xl md:text-3xl max-w-4xl font-medium tracking-[0.15em] italic"
+            >
+              陕西省 GDP 十年演进全景数据可视化大屏
+            </motion.p>
+          </motion.div>
         </div>
       </section>
 
-      {/* City Detail Section */}
-      <section id="cities" className="py-24 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-            >
-              <h2 className="text-4xl font-bold mb-4">核心城市透视</h2>
-              <p className="text-gray-500 text-lg">点击选择城市，查看深度行业结构与历史增长轨迹</p>
-            </motion.div>
-            <div className="flex flex-wrap gap-2">
-              {SHANXI_CITIES.map(city => (
+      {/* 数据大屏核心区域 */}
+      <motion.section 
+        id="data"
+        initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={sectionVariants}
+        className="py-24 bg-[#f8fafc]"
+      >
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <div className="mb-20 text-center">
+            <h2 className="text-4xl font-black text-slate-900 mb-6 tracking-tight">GDP 核心指标看板</h2>
+            <div className="inline-flex p-1.5 bg-slate-200/50 backdrop-blur rounded-2xl">
+              <button onClick={() => setActiveTab('trend')} className={`px-10 py-3 rounded-xl transition-all ${activeTab === 'trend' ? 'bg-white text-blue-600 shadow-xl' : 'text-slate-500'}`}>趋势分析</button>
+              <button onClick={() => setActiveTab('structure')} className={`px-10 py-3 rounded-xl transition-all ${activeTab === 'structure' ? 'bg-white text-blue-600 shadow-xl' : 'text-slate-500'}`}>结构分布</button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div className="lg:col-span-1 space-y-4">
+              {SHANXI_CITIES.map((city) => (
                 <button
                   key={city.name}
                   onClick={() => setSelectedCity(city)}
-                  className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 ${
-                    selectedCity.name === city.name 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' 
-                    : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
-                  }`}
+                  className={`w-full text-left p-6 rounded-[2rem] transition-all border-2 ${selectedCity.name === city.name ? 'border-blue-600 bg-blue-600 text-white shadow-xl' : 'border-transparent bg-white shadow-sm'}`}
                 >
-                  {city.name}
+                  <span className="font-black text-xl">{city.name}</span>
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-1 space-y-8">
-              <motion.div 
-                key={selectedCity.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-50 p-8 rounded-[32px] border border-gray-100 h-full"
-              >
-                <div className="mb-6">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white ${
-                    selectedCity.region === 'North' ? 'bg-orange-400' : 
-                    selectedCity.region === 'Central' ? 'bg-blue-500' : 'bg-emerald-500'
-                  }`}>
-                    {selectedCity.region === 'North' ? '陕北地区' : 
-                     selectedCity.region === 'Central' ? '关中地区' : '陕南地区'}
-                  </span>
-                  <h3 className="text-4xl font-bold mt-4">{selectedCity.name}</h3>
-                </div>
-                <p className="text-gray-600 leading-relaxed mb-10 text-lg">
-                  {selectedCity.description}
-                </p>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-white rounded-2xl border border-gray-100">
-                    <span className="text-gray-400 font-medium text-sm">2023 GDP</span>
-                    <span className="font-bold text-xl">{selectedCity.gdp2023} 亿</span>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-white rounded-2xl border border-gray-100">
-                    <span className="text-gray-400 font-medium text-sm">省内排名</span>
-                    <span className="font-bold text-xl">Top {SHANXI_CITIES.indexOf(selectedCity) + 1}</span>
-                  </div>
-                </div>
-              </motion.div>
+            <div className="lg:col-span-3 min-h-[500px]">
+              <AnimatePresence mode="wait">
+                {activeTab === 'trend' ? (
+                  <motion.div key="trend" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-[3.5rem] p-10 shadow-2xl h-full">
+                    <h4 className="font-black text-3xl mb-10">{selectedCity.name} 走势分析</h4>
+                    <div className="h-[400px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={selectedCity.history}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <XAxis dataKey="year" />
+                          <YAxis />
+                          <Tooltip content={<CustomTooltip />} />
+                          <Area type="monotone" dataKey="gdp" stroke="#2563eb" fill="#2563eb44" strokeWidth={4} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div key="pie" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-white rounded-[3.5rem] p-10 shadow-2xl h-full">
+                    <h4 className="font-black text-3xl mb-10 text-center">全省经济贡献版图</h4>
+                    <div className="h-[400px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={cityDistributionData} innerRadius={80} outerRadius={120} dataKey="value" paddingAngle={5}>
+                            {cityDistributionData.map((_, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                          </Pie>
+                          <Tooltip content={<CustomTooltip />} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+          </div>
+        </div>
+      </motion.section>
 
-            <div className="lg:col-span-2">
-              <div className="bg-white p-4 sm:p-8 rounded-[40px] shadow-sm border border-gray-100 h-full">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex bg-gray-50 p-1.5 rounded-2xl">
-                    <button 
-                      onClick={() => setActiveTab('trend')}
-                      className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'trend' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400'}`}
-                    >
-                      增长趋势
-                    </button>
-                    <button 
-                      onClick={() => setActiveTab('structure')}
-                      className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'structure' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400'}`}
-                    >
-                      产业结构
-                    </button>
+      {/* 文化板块 */}
+      <motion.section
+        id="culture"
+        initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.2 }} variants={sectionVariants}
+        className="py-24 bg-white"
+      >
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-black text-slate-900 mb-16">厚植文化底蕴 · 赋能数字未来</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {cultureItems.map((item, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => setSelectedCulture(item)}
+                className="group cursor-pointer p-12 bg-slate-50 rounded-[3rem] border border-slate-100 transition-all hover:bg-blue-600 hover:text-white"
+              >
+                <div className="text-6xl mb-6">{item.icon}</div>
+                <h3 className="text-xl font-black mb-4">{item.title}</h3>
+                <div className="w-10 h-1 bg-blue-500 group-hover:bg-white mx-auto rounded-full"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* 优势介绍板块 */}
+      <motion.section 
+        id="advantages"
+        initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.2 }} variants={sectionVariants}
+        className="py-32 bg-slate-900 text-white"
+      >
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
+            <div>
+              <h2 className="text-5xl font-black mb-10 tracking-tighter">三秦腾飞的 <span className="text-blue-500">核心密码</span></h2>
+              <div className="space-y-12">
+                <div className="flex gap-8">
+                  <div className="shrink-0 w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-3xl">🏛️</div>
+                  <div>
+                    <h4 className="text-2xl font-black mb-2 text-blue-400">政策优势</h4>
+                    <p className="text-slate-400 leading-relaxed">深度融入“一带一路”大格局，秦创原创新驱动平台正式起势，西部大开发3.0战略持续赋能。</p>
                   </div>
                 </div>
-
-                <div className="h-[400px]">
-                  <AnimatePresence mode="wait">
-                    {activeTab === 'trend' ? (
-                      <motion.div
-                        key="trend"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="h-full w-full"
-                      >
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={selectedCity.history}>
-                            <defs>
-                              <linearGradient id="colorGdp" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
-                                <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                              </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                            <XAxis 
-                              dataKey="year" 
-                              axisLine={false} 
-                              tickLine={false} 
-                              tick={{fill: '#94a3b8', fontSize: 12}}
-                            />
-                            <YAxis 
-                              axisLine={false} 
-                              tickLine={false} 
-                              tick={{fill: '#94a3b8', fontSize: 12}}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Area 
-                              type="monotone" 
-                              dataKey="gdp" 
-                              stroke="#2563eb" 
-                              strokeWidth={3} 
-                              fillOpacity={1} 
-                              fill="url(#colorGdp)" 
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="structure"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="h-full flex flex-col justify-center"
-                      >
-                        <div className="space-y-10 px-4">
-                          {[
-                            { label: '科技创新', key: 'tech', color: 'bg-blue-600' },
-                            { label: '能源工业', key: 'energy', color: 'bg-emerald-600' },
-                            { label: '房产基建', key: 'realEstate', color: 'bg-amber-600' }
-                          ].map((item) => (
-                            <div key={item.key}>
-                              <div className="flex justify-between items-end mb-4">
-                                <span className="font-bold text-lg">{item.label}</span>
-                                <span className="font-mono font-bold text-2xl">{(selectedCity.history[selectedCity.history.length-1].breakdown as any)[item.key]}%</span>
-                              </div>
-                              <div className="w-full h-4 bg-gray-50 rounded-full overflow-hidden">
-                                <motion.div 
-                                  initial={{ width: 0 }}
-                                  whileInView={{ width: `${(selectedCity.history[selectedCity.history.length-1].breakdown as any)[item.key]}%` }}
-                                  transition={{ duration: 1, delay: 0.2 }}
-                                  className={`h-full ${item.color}`}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                <div className="flex gap-8">
+                  <div className="shrink-0 w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-3xl">🌍</div>
+                  <div>
+                    <h4 className="text-2xl font-black mb-2 text-blue-400">地理优势</h4>
+                    <p className="text-slate-400 leading-relaxed">地处中国几何中心，承东启西、连接南北。西安国际港务区是全球最大的内陆港。</p>
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="rounded-[3rem] overflow-hidden shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" className="w-full h-full object-cover" />
+            </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Culture & Innovation Section */}
-      <section id="culture" className="py-24 px-6 bg-gray-50 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <motion.div 
-            className="text-center mb-20"
-            initial="hidden"
-            whileInView="visible"
-            variants={sectionVariants}
-          >
-            <h2 className="text-4xl font-bold mb-4">文旅科技双轮驱动</h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">
-              陕西不仅有厚重的历史，更有现代产业的活力。科技赋能传统文化，非遗走入现代生活。
-            </p>
-          </motion.div>
-
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8"
-            initial="hidden"
-            whileInView="visible"
-            variants={staggerContainer}
-          >
-            {cultureItems.map((item, idx) => (
-              <motion.div
-                key={idx}
-                variants={sectionVariants}
-                whileHover={{ y: -10 }}
-                onClick={() => setSelectedCulture(item)}
-                className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-xl group"
-              >
-                <div className="text-5xl mb-8 group-hover:scale-110 transition-transform duration-500">{item.icon}</div>
-                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                <p className="text-gray-500 leading-relaxed line-clamp-3">
-                  {item.detail}
-                </p>
-                <div className="mt-8 flex items-center text-blue-600 font-bold text-sm">
-                  了解更多 
-                  <span className="ml-2 group-hover:ml-3 transition-all">→</span>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+      {/* 2025/2026愿景 */}
+      <motion.section id="vision" initial="hidden" whileInView="visible" variants={sectionVariants} className="py-32 bg-white">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <h2 className="text-5xl font-black mb-12">2025：韧性跨越 | 2026：聚势启新</h2>
+          <p className="text-2xl font-bold text-blue-600 italic tracking-widest">“ 往昔已展千重锦，明朝更进百尺竿 ”</p>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Footer */}
-      <footer className="bg-white border-t py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-gray-400 text-sm">
-          <p>© 2024 陕西经济数据看板 · 数据仅供演示使用</p>
-          <div className="flex gap-8">
-            <a href="#" className="hover:text-blue-600 transition-colors">隐私政策</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">使用条款</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">数据来源</a>
-          </div>
+      {/* 页脚 */}
+      <footer className="bg-slate-50 py-20 border-t">
+        <div className="max-w-7xl mx-auto px-4 text-center text-slate-400">
+          <div className="text-xl font-black text-slate-900 mb-6">陕西经济数字化看板</div>
+          <p className="text-xs">© 2024 Shaanxi Data Intelligence. 仅供演示用途。</p>
         </div>
       </footer>
 
-      {/* Culture Detail Modal */}
+      {/* --- 弹窗组件：移至根部以修复 Fixed 定位偏差 --- */}
       <AnimatePresence>
         {selectedCulture && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center px-6">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedCulture(null)}
-              className="absolute inset-0 bg-black/40 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white max-w-lg w-full rounded-[40px] p-10 relative z-10 shadow-2xl"
+              className="relative w-full max-w-lg bg-white p-10 rounded-[3rem] shadow-2xl z-10 overflow-hidden"
             >
-              <button 
-                onClick={() => setSelectedCulture(null)}
-                className="absolute top-6 right-6 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-              >
-                ✕
+              <button onClick={() => setSelectedCulture(null)} className="absolute top-6 right-6 text-slate-300 hover:text-red-500 transition-colors">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
-              <div className="text-6xl mb-8">{selectedCulture.icon}</div>
-              <h3 className="text-3xl font-bold mb-6">{selectedCulture.title}</h3>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                {selectedCulture.detail}
-              </p>
-              <button 
-                onClick={() => setSelectedCulture(null)}
-                className="mt-10 w-full py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-gray-800 transition-colors"
-              >
-                关闭详情
-              </button>
+              <div className="text-7xl mb-8 text-center">{selectedCulture.icon}</div>
+              <h4 className="text-3xl font-black text-slate-900 mb-6 text-center">{selectedCulture.title}</h4>
+              <p className="text-slate-600 leading-relaxed font-medium text-center text-lg italic">“{selectedCulture.detail}”</p>
+              <div className="mt-10 flex justify-center">
+                <button onClick={() => setSelectedCulture(null)} className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:scale-105 transition-transform">返回看板</button>
+              </div>
             </motion.div>
           </div>
         )}
