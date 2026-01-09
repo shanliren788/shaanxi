@@ -11,7 +11,7 @@ export const SHANXI_CITIES: CityData[] = [
     history: Array.from({ length: 10 }, (_, i) => ({
       year: 2014 + i,
       gdp: 5400 + i * 650 + Math.random() * 200,
-      breakdown: { energy: 10, tech: 60, realEstate: 30 }
+      breakdown: { energy: 5, tech: 45, realEstate: 20, tourism: 30 }
     }))
   },
   {
@@ -22,7 +22,7 @@ export const SHANXI_CITIES: CityData[] = [
     history: Array.from({ length: 10 }, (_, i) => ({
       year: 2014 + i,
       gdp: 3000 + i * 400 + Math.random() * 150,
-      breakdown: { energy: 75, tech: 10, realEstate: 15 }
+      breakdown: { energy: 75, tech: 5, realEstate: 10, tourism: 10 }
     }))
   },
   {
@@ -33,7 +33,7 @@ export const SHANXI_CITIES: CityData[] = [
     history: Array.from({ length: 10 }, (_, i) => ({
       year: 2014 + i,
       gdp: 1600 + i * 120 + Math.random() * 50,
-      breakdown: { energy: 20, tech: 50, realEstate: 30 }
+      breakdown: { energy: 15, tech: 40, realEstate: 25, tourism: 20 }
     }))
   },
   {
@@ -44,7 +44,7 @@ export const SHANXI_CITIES: CityData[] = [
     history: Array.from({ length: 10 }, (_, i) => ({
       year: 2014 + i,
       gdp: 1700 + i * 130 + Math.random() * 60,
-      breakdown: { energy: 15, tech: 55, realEstate: 30 }
+      breakdown: { energy: 10, tech: 50, realEstate: 25, tourism: 15 }
     }))
   },
   {
@@ -55,7 +55,7 @@ export const SHANXI_CITIES: CityData[] = [
     history: Array.from({ length: 10 }, (_, i) => ({
       year: 2014 + i,
       gdp: 1200 + i * 100 + Math.random() * 40,
-      breakdown: { energy: 70, tech: 10, realEstate: 20 }
+      breakdown: { energy: 60, tech: 5, realEstate: 10, tourism: 25 }
     }))
   },
   {
@@ -66,7 +66,7 @@ export const SHANXI_CITIES: CityData[] = [
     history: Array.from({ length: 10 }, (_, i) => ({
       year: 2014 + i,
       gdp: 1000 + i * 100 + Math.random() * 30,
-      breakdown: { energy: 10, tech: 30, realEstate: 60 }
+      breakdown: { energy: 5, tech: 25, realEstate: 40, tourism: 30 }
     }))
   },
   {
@@ -77,7 +77,7 @@ export const SHANXI_CITIES: CityData[] = [
     history: Array.from({ length: 10 }, (_, i) => ({
       year: 2014 + i,
       gdp: 700 + i * 60 + Math.random() * 20,
-      breakdown: { energy: 5, tech: 35, realEstate: 60 }
+      breakdown: { energy: 5, tech: 25, realEstate: 35, tourism: 35 }
     }))
   }
 ];

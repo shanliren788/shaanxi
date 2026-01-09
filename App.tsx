@@ -202,13 +202,14 @@ const App: React.FC = () => {
     };
   }, [handleWheel, activeIndex, isLoading, scrollToIndex]);
 
-  // 数据按GDP权重排序
+  // 数据按GDP权重排序，并包含产业结构信息
   const cityDistributionData = useMemo(() => {
     return SHANXI_CITIES
       .map(city => ({
         name: city.name,
         value: city.gdp2023,
-        region: city.region
+        region: city.region,
+        breakdown: city.history[city.history.length - 1].breakdown
       }))
       .sort((a, b) => b.value - a.value);
   }, []);
@@ -352,7 +353,6 @@ const App: React.FC = () => {
                       className={`bg-white rounded-[2rem] p-10 shadow-xl h-[540px] flex flex-col relative overflow-hidden transition-[grid-column] duration-700 ${activeTab === 'trend' ? 'lg:col-span-3' : 'lg:col-span-4'}`}
                     >
                       <div className="flex-1 relative w-full h-full">
-                        {/* 修改点：移除 initial={false}，确保首次挂载趋势图板块时动画能正常执行 */}
                         <AnimatePresence mode="popLayout">
                           {activeTab === 'trend' ? (
                             <motion.div 
@@ -364,7 +364,6 @@ const App: React.FC = () => {
                               className="absolute inset-0 flex flex-col w-full h-full"
                             >
                               <h4 className="font-black text-xl mb-8 text-slate-800 shrink-0">{selectedCity.name} 历年生产总值 (亿元)</h4>
-                              {/* 核心改动：为折线图容器添加从左到右缓慢加载的 clipPath 动画，时长 1.5s */}
                               <motion.div 
                                 key={`trend-chart-anim-${selectedCity.name}`}
                                 initial={{ clipPath: 'inset(0 100% 0 0)' }}
@@ -378,7 +377,6 @@ const App: React.FC = () => {
                                     <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
                                     <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
                                     <Tooltip content={<CustomTooltip />} />
-                                    {/* 同步 animationDuration 为 1.5s 以获得更平滑的整体感知 */}
                                     <Area type="monotone" dataKey="gdp" stroke="#3b82f6" fill="url(#colorGdp)" strokeWidth={3} animationDuration={1500} />
                                     <defs><linearGradient id="colorGdp" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/><stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/></linearGradient></defs>
                                   </AreaChart>
@@ -394,7 +392,6 @@ const App: React.FC = () => {
                               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                               className="absolute inset-0 flex flex-col w-full h-full items-center justify-center"
                             >
-                              {/* 背景动态光晕 (Aura Effect) */}
                               <motion.div 
                                 animate={{ 
                                   scale: [1, 1.05, 1],
@@ -415,26 +412,81 @@ const App: React.FC = () => {
                               </motion.h4>
                               
                               <div className="relative flex-grow flex items-center justify-center min-h-0 w-full h-full">
+                                {/* 产业结构展示：移动至四角卡片布局 - 已增大字体 */}
+                                <AnimatePresence>
+                                  {activePieIndex !== -1 && (
+                                    <>
+                                      {/* 左上 - 能源 */}
+                                      <motion.div 
+                                        initial={{ opacity: 0, x: -30, y: -30 }}
+                                        animate={{ opacity: 1, x: 0, y: 0 }}
+                                        exit={{ opacity: 0, x: -30, y: -30 }}
+                                        className="absolute top-0 left-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                      >
+                                        <span className="text-3xl mb-1.5">⚡</span>
+                                        <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">能源产业</span>
+                                        <span className="text-2xl font-black text-orange-600">{cityDistributionData[activePieIndex]?.breakdown.energy}%</span>
+                                      </motion.div>
+
+                                      {/* 左下 - 科技 */}
+                                      <motion.div 
+                                        initial={{ opacity: 0, x: -30, y: 30 }}
+                                        animate={{ opacity: 1, x: 0, y: 0 }}
+                                        exit={{ opacity: 0, x: -30, y: 30 }}
+                                        className="absolute bottom-0 left-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                      >
+                                        <span className="text-3xl mb-1.5">💻</span>
+                                        <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">科技创新</span>
+                                        <span className="text-2xl font-black text-blue-600">{cityDistributionData[activePieIndex]?.breakdown.tech}%</span>
+                                      </motion.div>
+
+                                      {/* 右上 - 房产 */}
+                                      <motion.div 
+                                        initial={{ opacity: 0, x: 30, y: -30 }}
+                                        animate={{ opacity: 1, x: 0, y: 0 }}
+                                        exit={{ opacity: 0, x: 30, y: -30 }}
+                                        className="absolute top-0 right-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                      >
+                                        <span className="text-3xl mb-1.5">🏢</span>
+                                        <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">房地产</span>
+                                        <span className="text-2xl font-black text-emerald-600">{cityDistributionData[activePieIndex]?.breakdown.realEstate}%</span>
+                                      </motion.div>
+
+                                      {/* 右下 - 旅游 */}
+                                      <motion.div 
+                                        initial={{ opacity: 0, x: 30, y: 30 }}
+                                        animate={{ opacity: 1, x: 0, y: 0 }}
+                                        exit={{ opacity: 0, x: 30, y: 30 }}
+                                        className="absolute bottom-0 right-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                      >
+                                        <span className="text-3xl mb-1.5">🏮</span>
+                                        <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">文化旅游</span>
+                                        <span className="text-2xl font-black text-pink-600">{cityDistributionData[activePieIndex]?.breakdown.tourism}%</span>
+                                      </motion.div>
+                                    </>
+                                  )}
+                                </AnimatePresence>
+
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                                  <div className="relative flex flex-col items-center justify-center w-40 h-40">
+                                  <div className="relative flex flex-col items-center justify-center w-64 h-64">
                                     <AnimatePresence mode="popLayout">
                                       {activePieIndex !== -1 ? (
                                         <motion.div 
-                                          key={`val-v4-${activePieIndex}`} 
+                                          key={`val-v5-center-${activePieIndex}`} 
                                           className="flex flex-col items-center" 
-                                          initial={{ opacity: 0, scale: 0.5, y: 20 }} 
-                                          animate={{ opacity: 1, scale: 1, y: 0 }} 
-                                          exit={{ opacity: 0, scale: 0.5, y: -20 }} 
+                                          initial={{ opacity: 0, scale: 0.5 }} 
+                                          animate={{ opacity: 1, scale: 1 }} 
+                                          exit={{ opacity: 0, scale: 0.5 }} 
                                           transition={{ type: "spring", stiffness: 200, damping: 15 }}
                                         >
-                                          <span className="text-5xl font-black text-blue-600 drop-shadow-xl leading-tight">
+                                          <span className="text-6xl font-black text-blue-600 drop-shadow-2xl leading-tight">
                                             <CountUp value={cityDistributionData[activePieIndex]?.value} />
                                           </span>
                                           <motion.span 
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             transition={{ delay: 0.3 }}
-                                            className="text-[12px] text-slate-400 font-bold tracking-[0.3em] uppercase mt-1"
+                                            className="text-[14px] text-slate-400 font-bold tracking-[0.4em] uppercase mt-1"
                                           >
                                             亿元
                                           </motion.span>
@@ -449,8 +501,8 @@ const App: React.FC = () => {
                                       activeIndex={activePieIndex} 
                                       activeShape={renderActiveShape} 
                                       data={cityDistributionData} 
-                                      innerRadius={85} 
-                                      outerRadius={135} 
+                                      innerRadius={90} 
+                                      outerRadius={140} 
                                       dataKey="value" 
                                       paddingAngle={4} 
                                       cx="50%" 
@@ -487,7 +539,7 @@ const App: React.FC = () => {
                                 transition={{ delay: 1.2 }}
                                 className="text-center mt-4 opacity-40 text-[10px] font-black tracking-[0.4em] uppercase shrink-0 relative z-10"
                               >
-                                交互式数据矩阵 · 实时权重预览
+                                交互式数据矩阵 · 实时权重与四角产业映射
                               </motion.div>
                             </motion.div>
                           )}

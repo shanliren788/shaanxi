@@ -3,6 +3,7 @@ export interface IndustryBreakdown {
   energy: number;
   tech: number;
   realEstate: number;
+  tourism: number;
 }
 
 export interface YearData {
