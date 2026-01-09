@@ -412,52 +412,52 @@ const App: React.FC = () => {
                               </motion.h4>
                               
                               <div className="relative flex-grow flex items-center justify-center min-h-0 w-full h-full">
-                                {/* 产业结构展示：移动至四角卡片布局 - 已增大字体 */}
+                                {/* 产业结构展示：再次平移位置 (left-24 / right-24) */}
                                 <AnimatePresence>
                                   {activePieIndex !== -1 && (
                                     <>
-                                      {/* 左上 - 能源 */}
+                                      {/* 左上 - 能源：再次向右平移 left-24 */}
                                       <motion.div 
                                         initial={{ opacity: 0, x: -30, y: -30 }}
                                         animate={{ opacity: 1, x: 0, y: 0 }}
                                         exit={{ opacity: 0, x: -30, y: -30 }}
-                                        className="absolute top-0 left-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                        className="absolute top-0 left-24 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
                                       >
                                         <span className="text-3xl mb-1.5">⚡</span>
                                         <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">能源产业</span>
                                         <span className="text-2xl font-black text-orange-600">{cityDistributionData[activePieIndex]?.breakdown.energy}%</span>
                                       </motion.div>
 
-                                      {/* 左下 - 科技 */}
+                                      {/* 左下 - 科技：再次向右平移 left-24 */}
                                       <motion.div 
                                         initial={{ opacity: 0, x: -30, y: 30 }}
                                         animate={{ opacity: 1, x: 0, y: 0 }}
                                         exit={{ opacity: 0, x: -30, y: 30 }}
-                                        className="absolute bottom-0 left-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                        className="absolute bottom-0 left-24 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
                                       >
                                         <span className="text-3xl mb-1.5">💻</span>
                                         <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">科技创新</span>
                                         <span className="text-2xl font-black text-blue-600">{cityDistributionData[activePieIndex]?.breakdown.tech}%</span>
                                       </motion.div>
 
-                                      {/* 右上 - 房产 */}
+                                      {/* 右上 - 房产：再次向左平移 right-24 */}
                                       <motion.div 
                                         initial={{ opacity: 0, x: 30, y: -30 }}
                                         animate={{ opacity: 1, x: 0, y: 0 }}
                                         exit={{ opacity: 0, x: 30, y: -30 }}
-                                        className="absolute top-0 right-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                        className="absolute top-0 right-24 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
                                       >
                                         <span className="text-3xl mb-1.5">🏢</span>
                                         <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">房地产</span>
                                         <span className="text-2xl font-black text-emerald-600">{cityDistributionData[activePieIndex]?.breakdown.realEstate}%</span>
                                       </motion.div>
 
-                                      {/* 右下 - 旅游 */}
+                                      {/* 右下 - 旅游：再次向左平移 right-24 */}
                                       <motion.div 
                                         initial={{ opacity: 0, x: 30, y: 30 }}
                                         animate={{ opacity: 1, x: 0, y: 0 }}
                                         exit={{ opacity: 0, x: 30, y: 30 }}
-                                        className="absolute bottom-0 right-0 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
+                                        className="absolute bottom-0 right-24 p-6 bg-white/40 backdrop-blur-md rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center z-30"
                                       >
                                         <span className="text-3xl mb-1.5">🏮</span>
                                         <span className="text-[12px] font-bold text-slate-500 uppercase tracking-tighter mb-1">文化旅游</span>
